@@ -1,75 +1,91 @@
-import os
 from common import Color
-import sdl, sdl2.ext
+import struct
+import os
+import traceback
 
-class Texture(object):
-    # TODO -- remove "object" subclass? It's the default in Python3?
+class Texture:
     def __init__(self, name):
-        super().__init__()
-        self.path = os.path.normpath("{}{}{}{}".format("Resources", os.sep, name, ".tga"))
-        self.w = 0
-        self.h = 0
-        self._colors = []
-
-        self._initialize()
-
-    def __getattribute__(self, index):
-        """ Return a indexed attribute of the _colors array.
-
-            The item at index is, itself, an array.
-            So, in typical usage, users will refer to, e.g., texture[x][y],
-            where texture[x] returns an array (the "x column"), which is y
-            elements long
+        """ Initialize a texture from a tga file
+            
+            Note: This is hand-coded. With a more robust renderer, we could
+            probably use an image loader 
         """
-        # Note: apparently, __getattribute__ is available only in "modern"
-        # Python; in older versions, __getattr__ would be required.
-        return self._colors[index]
+        self._width : int = 0
+        self._height : int = 0
+        self._pixels : [Color] = []
 
-    def _load_image(self, path):
-        image_surface = sdl2.ext.load_image(path)
-        return image_surface
+        path = "{}{}{}{}".format('Resources', os.path.sep, name, '.tga')
 
-    def _initialize(self):
-        """ Do some initializtion work
+        with open(path, 'rb') as fd:
+            try:
+                # Read file header
+                # TODO worry about sign? (we should be reading uint8)
+                # Note: header is of type "bytes"
+                header = fd.read(18)
+            except Exception as e:
+                print("Couldn't load the tga {}: {}".format(path, e))
+                traceback.print_exc()
+                return
+
+            useColorMap = header[0] != 0
+            imageType = int(header[2])
+            if useColorMap or imageType in (0, 1, 3):
+                raise Exception("{} is not a color tga".format(path))
+                return
+
+            IDLength = header[0]
+            self._width = int(header[13])*256 + int(header[12])
+            self._height = int(header[15])*256 + int(header[14])
+            pixelDepth = header[16]
+
+            lengthImage = int(pixelDepth) * self._width * self._height // 8
+
+            fd.seek(18 + int(IDLength))
+            content = fd.read(lengthImage)
+
+            if pixelDepth == 8:
+                self._pixels = [ Color(float(byt)/255.0, float(byt)/255.0, float(byt)/255.0) for byt in content ]
+            else:
+                pixelBytes = pixelDepth // 8
+
+                for i in range(0, (self._width * self._height)):
+                    r = float(content[pixelBytes * i + 2]) / 255.0
+                    g = float(content[pixelBytes * i + 1]) / 255.0
+                    b = float(content[pixelBytes * i    ]) / 255.0
+                    self._pixels.append(Color(r, g, b))
+
+
+    ##def _subscript(self, a: int, b: int) -> Color:
+    ##    return self._pixels
+
+    ##def __getitem__(self, pos):
+    ##    """ Get the Color at a given x,y location
+
+    ##        :param pos: Position in Texture image to return Color from
+    ##        :type pos: 2-tuple: float
+    ##    """
+    ##    a = pos[0] * float(self._width)
+    ##    b = pos[1] * float(self._height)
+
+    ##    return self._pixels[ min(max(b,0), height-1) * width + \
+    ##                         min(max(a,0), width-1) ]
+
+
+    def __getitem__(self, pos: tuple) -> Color:
+        """ Get the Color at a given u,v location
+
+            :param pos: Position in Texture image to return Color from
+            :type pos: 2-tuple: float (values from 0.0 - 1.0)
         """
-        image_surface = self._load_image(self.path)
+        a = pos[0] * self._width
+        b = pos[1] * self._height
+        return self._subscript( int(pos[0]), int(pos[1]))
 
-        # Get width and height 
-        self.w = image_surface.clip_rect.w
-        self.h = image_surface.clip_rect.h
+    def _subscript(self, a: int, b: int) -> Color:
+        """ Get the Color at a given x,y location
 
-        # Get pixels
-        pixels = sdl2.ext.pixels2d(image_surface)
+            x,y is computed from u,v (normalized) texture coordinates
 
-        # Initialize self._colors array (2D array, for simplicity)
-        self._colors = self._get_colors_from_pixels(pixels)
-        
-        
-    def _get_colors_from_pixels(self, pixels):
-        """ Create an array of Color objects from an sdl2 pixels array
-
-            NOTE: this function assumes 32 bits per pixel
+            :param a: 
         """
-        RED_MASK   = 0x00ff0000
-        GREEN_MASK = 0x0000ff00
-        BLUE_MASK  = 0x000000ff
-
-        colors = []
-
-        # Ye olde double "for" loop (there's no way to go faster than this)
-        # Note: pixels are stored as x,y (i.e. columns, then rows)
-        for x in pixels:
-            # Append an empty list to the colors array
-            colors.append([])
-
-            for y in pixels[x]:
-                # note: we have to shift because the bitmask leaves the color
-                # component where it was (i.e., the RED component is held in
-                # bits 16..23 (0-indexed)
-                r = (pixels[x][y] & RED_MASK) >> 16
-                g = (pixels[x][y] & GREEN_MASK) >> 8
-                b = (pixels[x][y] & BLUE_MASK)
-
-                colors[x].append( Color(r / 255.0, g / 255.0, b / 255.0) )
-
-        return colors
+        return self._pixels[ min(max(b, 0), self._height-1) * self._width + min(max(a, 0), self._width-1) ]
