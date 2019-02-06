@@ -27,6 +27,8 @@ def normalize(a: numpy.ndarray) -> numpy.ndarray:
     """
     return a / numpy.linalg.norm(a)
 
+# TODO 2019-02-06 - maybe change the Point2, Point3, Point4, and Matrix4 classes to be lambdas or functions that return numpy.ndarrays, instead of having each class subclass the numpy.ndarray type? Maybe keeps data types cleaner (e.g., right now, if you do m.dot(p), where m is a Matrix4 and p is a Point4, the return type is a Matrix4, when we want Point4; but structurally, the Matrix4 is identical to a Point4 (both are simply numpy.ndarrays, anyway). The disadvantage to this approach is that we lose the .x/y/z/w properties (setters/getters -- is there a workaround?)
+
 
 class Point2(numpy.ndarray):
     def __new__(cls, x=0.0, y=0.0):
@@ -293,27 +295,28 @@ class Matrix4(numpy.ndarray):
                 for row in range(0, 4):
                     self[col][row] = args[0]
         elif len(args) == 16:
-            # IMPORTANT NOTE
+            # IMPORTANT NOTE: numpy stores matrices in row major order. i.e., indices are [row][col]
             # column-major = self[col][row]
+            # TODO 2019-02-05 -- update the matrix initialization functions to match
             # TODO - (re)write __getitem__ functions to allow passing a tuple into the subscript (e.g., self[x,y] instead of self[x][y])
             self[0][0] = args[0]
-            self[0][1] = args[4]
-            self[0][2] = args[8]
-            self[0][3] = args[12]
+            self[0][1] = args[1]
+            self[0][2] = args[2]
+            self[0][3] = args[3]
             
-            self[1][0] = args[1]
+            self[1][0] = args[4]
             self[1][1] = args[5]
-            self[1][2] = args[9]
-            self[1][3] = args[13]
+            self[1][2] = args[6]
+            self[1][3] = args[7]
             
-            self[2][0] = args[2]
-            self[2][1] = args[6]
+            self[2][0] = args[8]
+            self[2][1] = args[9]
             self[2][2] = args[10]
-            self[2][3] = args[14]
+            self[2][3] = args[11]
             
-            self[3][0] = args[3]
-            self[3][1] = args[7]
-            self[3][2] = args[11]
+            self[3][0] = args[12]
+            self[3][1] = args[13]
+            self[3][2] = args[14]
             self[3][3] = args[15]
         elif len(args) not in (1, 16):
             raise Exception("Invalid number of matrix elements provided")
@@ -397,12 +400,6 @@ class Matrix4(numpy.ndarray):
         v = normalize( Point3(crossp_u_n[0][0], crossp_u_n[0][1], crossp_u_n[0][2]))
         v_transposed = v.transpose()
 
-        ## Note: this is what the matrix looks like on paper
-        #matrix = Matrix4( u.x,  u.y,  u.z, -numpy.dot(u, eye),
-        #                  v.x,  v.y,  v.z, -numpy.dot(v, eye),
-        #                 -n.x, -n.y, -n.z,  numpy.dot(n, eye),
-        #                  0.0,  0.0,  0.0,  1.0 )
-
         # Note: we have to do this transpose nonsense for dot products, too
         # (apparently, numpy doesn't like to dot a 3x1 with another 3x1.
         # There's probably some pure linear algebra explanation for that, but
@@ -418,13 +415,10 @@ class Matrix4(numpy.ndarray):
         dot_v_eye = float( v_transposed.dot(eye) )
         dot_n_eye = float( n_transposed.dot(eye) )
 
-        # Our matrix initialization takes items in column order (i.e. the 1st
-        # 4 params you see in the ctor constitute the first COLUMN in the
-        # matrix stored in RAM)
-        matrix = Matrix4( u.x, v.x, -n.x, 0.0, 
-                          u.y, v.y, -n.y, 0.0,
-                          u.z, v.z, -n.z, 0.0,
-                          -dot_u_eye, -dot_v_eye, dot_n_eye, 1.0 )
+        matrix = Matrix4(  u.x,  u.y,  u.z, -dot_u_eye,
+                           v.x,  v.y,  v.z, -dot_v_eye,
+                          -n.x, -n.y, -n.z,  dot_n_eye,
+                           0.0,  0.0,  0.0,  1.0 )
 
         return matrix
 
