@@ -4,6 +4,7 @@
 from __future__ import annotations
 from common import Point2
 from common import Point4
+from copy import deepcopy
 import traceback
 import os
 
@@ -20,9 +21,9 @@ class Vertex:
             numpy.Point4 objects with the appropriate 4D (homogeneous) values
             to represent points and vectors with homogeneous coordinates.
         """
-        self.p = p      # p (position) is a point (x,y,z,w, where w == 0)
-        self.n = n      # n (normal) is a vector (x,y,z,w, where w == 1)
-        self.t = t      # t (texture coordinates) is a point (x,y)
+        self.p = deepcopy(p)    # p (position): point (x,y,z,w, where w == 0)
+        self.n = deepcopy(n)    # n (normal): vector (x,y,z,w, where w == 1)
+        self.t = deepcopy(t)    # t (texture coordinates): point (x,y)
 
     def __eq__(self, other):
         # Note that this function relies on the == operator of the various
@@ -37,9 +38,9 @@ class Vertex:
 
 class Face:
     def __init__(self, v0: Vertex = None, v1: Vertex = None, v2: Vertex = None):
-        self.v0 = v0
-        self.v1 = v1
-        self.v2 = v2
+        self.v0 = deepcopy(v0)
+        self.v1 = deepcopy(v1)
+        self.v2 = deepcopy(v2)
 
     # Helper function to avoid manually replicating unchanged normals and texture
     # coordinates when updating positions.
@@ -48,7 +49,6 @@ class Face:
 
             This function does not have any default parameters
         """
-        # TODO debug -- is it safe to do a straight assignment here, or do the vertices (and anything based on numpy arrays) need to be deep copied?
         self.v0 = Vertex(p=p0, n=face.v0.n, t=face.v0.t)
         self.v1 = Vertex(p=p1, n=face.v1.n, t=face.v1.t)
         self.v2 = Vertex(p=p2, n=face.v2.n, t=face.v2.t)

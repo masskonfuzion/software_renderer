@@ -123,13 +123,10 @@ def draw(fScreen: Face, framebuffer: Framebuffer, texture: Texture):
                 # Perspective interpolation of texture coordinates and normal
                 tex = persp.x * fScreen.v0.t + persp.y * fScreen.v1.t + persp.z * fScreen.v2.t
                 nor = persp.x * fScreen.v0.n + persp.y * fScreen.v1.n + persp.z * fScreen.v2.n
-                nor = Point3(x=nor.x, y=nor.y, z=nor.z)
 
                 # Compute the color: use a diffuse factor with a strong light intensity
-                unit_normal = normalize(nor)
-                unit_yz = normalize(Point3(0.0, 1.0, 1.0))
+                diffuse = 1.5 * max(0.0, normalize(Point3(nor.x, nor.y, nor.z)).dot(normalize(Point3(0.0, 1.0, 1.0))))
 
-                diffuse = 1.5 * max(0.0, float(unit_normal.transpose().dot(unit_yz)))
                 # TODO define texture.. Where does it come from? Is it global, from main?
                 #color = diffuse * texture[tex.x][tex.y]
                 color = diffuse * texture[tex.x, tex.y]
@@ -149,8 +146,7 @@ def boundingBox(vs: Face, width: int, height:int) -> (Point2, Point2):
     v2ScreenSpace = Point2(vs.v2.p.x, vs.v2.p.y)
 
     # Find minimal and maximal points.
-    # TODO figure out the inner min()/max() calls -- might need to write min/max fns that work on Points
-    # PAIRWISE min/max!!!!!
+    # Note: PAIRWISE min/max
     mini = Point2.min( Point2.min(v0ScreenSpace, v1ScreenSpace), v2ScreenSpace )
     maxi = Point2.max( Point2.max(v0ScreenSpace, v1ScreenSpace), v2ScreenSpace )
 
@@ -172,22 +168,9 @@ def barycentre(p: Point2, v0: Point4, v1: Point4, v2: Point4) -> Point3:
     pa = Point2(v0.x, v0.y) - p
 
     # This formula for uv1 is pure sorcery
-    uv1 = Point3( *numpy.cross(Point3(ac.x, ab.x, pa.x).transpose(), Point3(ac.y, ab.y, pa.y).transpose())[0] )
-
-    # Also note: numpy.cross does not work with 3x1 arrays; it only works
-    # (apparently) with 1x3 arrays. My Point3's are 3x1, so I cannot use them
-    # in numpy.cross() calculations; I can only use their transpose(). 
-    # The result of a numpy.cross, with the data types I've crafted, is a 1x3
-    # numpy array
-    # Example:
-	#>>> vec_a = Point3(1,2,3)
-	#>>> vec_b = Point3(4,5,6)
-	#>>> numpy.cross(vec_a.transpose(), vec_b.transpose())
-	#array([[-3.,  6., -3.]])
-    # So the *arg I've passed to the Point3 constructor (above) indexes the
-    # [0] item of the numpy.cross() array, which is, itself, an array
-    # (I'm not sure why the numpy.cross appears to be actually a 2D array,
-    # like [[x, y, z]]. I suppose I could read the documentation, but... Nah)
+    # Note that we don't HAVE to initialize a Point3 here, but if we don't,
+    # then we get the cross product as an actual numpy.ndarray, not a Point3
+    uv1 = Point3( *numpy.cross(Point3(ac.x, ab.x, pa.x), Point3(ac.y, ab.y, pa.y)) )
 
     # Avoid division imprecision
     if abs(uv1.z) < 1e-2:

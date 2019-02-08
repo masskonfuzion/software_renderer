@@ -1,4 +1,5 @@
 from common import Color
+from copy import deepcopy
 
 # Note: in Python3, we don't have to subclass object (i.e., the "new-style
 # class"), because it is the default super class
@@ -42,7 +43,7 @@ class Framebuffer:
         self._depthBuffer[y * self.width + x] = depth
         
     def setColor(self, x: int, y: int, color: Color):
-        self._colorBuffer[y * self.width + x]
+        self._colorBuffer[y * self.width + x] = deepcopy(color)
 
     def clear(self, color: Color = Color(0.0)):
         """ Clear the frame buffer

@@ -79,7 +79,7 @@ class Texture:
         """
         a = pos[0] * self._width
         b = pos[1] * self._height
-        return self._subscript( int(pos[0]), int(pos[1]))
+        return self._subscript( int(a), int(b))
 
     def _subscript(self, a: int, b: int) -> Color:
         """ Get the Color at a given x,y location

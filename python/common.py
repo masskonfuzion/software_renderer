@@ -27,7 +27,7 @@ def normalize(a: numpy.ndarray) -> numpy.ndarray:
     """
     return a / numpy.linalg.norm(a)
 
-# TODO 2019-02-06 - maybe change the Point2, Point3, Point4, and Matrix4 classes to be lambdas or functions that return numpy.ndarrays, instead of having each class subclass the numpy.ndarray type? Maybe keeps data types cleaner (e.g., right now, if you do m.dot(p), where m is a Matrix4 and p is a Point4, the return type is a Matrix4, when we want Point4; but structurally, the Matrix4 is identical to a Point4 (both are simply numpy.ndarrays, anyway). The disadvantage to this approach is that we lose the .x/y/z/w properties (setters/getters -- is there a workaround?)
+# TODO 2019-02-06 - maybe change the Point2, Point3, Point4, and Matrix4 classes to be lambdas or functions that return numpy.ndarrays, instead of having each class subclass the numpy.ndarray type? Maybe keeps data types cleaner (e.g., right now, if you do m.dot(p), where m is a Matrix4 and p is a Point4, the return type is a Matrix4, when we want Point4; but structurally, the Matrix4 is identical to a Point4 (both are simply numpy.ndarrays, anyway). The disadvantage to this approach is that we lose the .x/y/z/w properties (setters/getters) and the float_eq-modified __eq__ functions -- is there a workaround?
 
 
 class Point2(numpy.ndarray):
@@ -45,11 +45,11 @@ class Point2(numpy.ndarray):
             |  No ``__init__`` method is needed because the array is fully initialized
             |  after the ``__new__`` method.
         """
-        return super().__new__(cls, (2, 1), buffer=numpy.array( (float(x), float(y))  ))
+        return super().__new__(cls, (2,), buffer=numpy.array( (float(x), float(y))  ))
 
     def __eq__(self, other):
-        return float_eq(self[0][0], other[0][0]) and \
-               float_eq(self[1][0], other[1][0])
+        return float_eq(self[0], other[0]) and \
+               float_eq(self[1], other[1])
 
     ## At one point, we had implemented our own __repr__ -- but we've commented
     ## it out, because our __repr__ was interfering with this class'
@@ -59,19 +59,19 @@ class Point2(numpy.ndarray):
 
     @property
     def x(self) -> float:
-        return self[0][0]
+        return self[0]
 
     @x.setter
     def x(self, value: float):
-        self[0][0] = value
+        self[0] = value
 
     @property
     def y(self) -> float:
-        return self[1][0]
+        return self[1]
 
     @y.setter
     def y(self, value: float):
-        self[1][0] = value
+        self[1] = value
 
     @staticmethod
     def min(p1, p2):
@@ -116,42 +116,42 @@ class Point3(numpy.ndarray):
             |  after the ``__new__`` method.
         """
 
-        return super().__new__(cls, (3,1), buffer=numpy.array( (float(x), float(y), float(z)) ))
+        return super().__new__(cls, (3,), buffer=numpy.array( (float(x), float(y), float(z)) ))
 
     def __eq__(self, other):
-        return float_eq(self[0][0], other[0][0]) and \
-               float_eq(self[1][0], other[1][0]) and \
-               float_eq(self[2][0], other[2][0])
+        return float_eq(self[0], other[0]) and \
+               float_eq(self[1], other[1]) and \
+               float_eq(self[2], other[2])
 
     ## At one point, we had implemented our own __repr__ -- but we've commented
     ## it out, because our __repr__ was interfering with this class'
     ## compatibility with numpy functions
     #def __repr__(self):
-    #    return "Point3(x={}, y={}, z={})".format(self[0][0], self[1][0], self[2][0])
+    #    return "Point3(x={}, y={}, z={})".format(self[0], self[1], self[2])
 
     @property
     def x(self) -> float:
-        return self[0][0]
+        return self[0]
 
     @x.setter
     def x(self, value: float):
-        self[0][0] = value
+        self[0] = value
 
     @property
     def y(self) -> float:
-        return self[1][0]
+        return self[1]
 
     @y.setter
     def y(self, value: float):
-        self[1][0] = value
+        self[1] = value
 
     @property
     def z(self) -> float:
-        return self[2][0]
+        return self[2]
 
     @z.setter
     def z(self, value: float):
-        self[2][0] = value
+        self[2] = value
 
     @staticmethod
     def min(p1, p2):
@@ -183,13 +183,13 @@ class Point4(numpy.ndarray):
             |  No ``__init__`` method is needed because the array is fully initialized
             |  after the ``__new__`` method.
         """
-        return super().__new__(cls, (4, 1), buffer=numpy.array( (float(x), float(y), float(z), float(w)) ))
+        return super().__new__(cls, (4,), buffer=numpy.array( (float(x), float(y), float(z), float(w)) ))
 
     def __eq__(self, other):
-        return float_eq(self[0][0], other[0][0]) and \
-               float_eq(self[1][0], other[1][0]) and \
-               float_eq(self[2][0], other[2][0]) and \
-               float_eq(self[3][0], other[3][0])
+        return float_eq(self[0], other[0]) and \
+               float_eq(self[1], other[1]) and \
+               float_eq(self[2], other[2]) and \
+               float_eq(self[3], other[3])
 
     ## At one point, we had implemented our own __repr__ -- but we've commented
     ## it out, because our __repr__ was interfering with this class'
@@ -199,35 +199,35 @@ class Point4(numpy.ndarray):
 
     @property
     def x(self) -> float:
-        return self[0][0]
+        return self[0]
 
     @x.setter
     def x(self, value: float):
-        self[0][0] = value
+        self[0] = value
 
     @property
     def y(self) -> float:
-        return self[1][0]
+        return self[1]
 
     @y.setter
     def y(self, value: float):
-        self[1][0] = value
+        self[1] = value
 
     @property
     def z(self) -> float:
-        return self[2][0]
+        return self[2]
 
     @z.setter
     def z(self, value: float):
-        self[2][0] = value
+        self[2] = value
 
     @property
     def w(self) -> float:
-        return self[3][0]
+        return self[3]
 
     @w.setter
     def w(self, value: float):
-        self[3][0] = value
+        self[3] = value
 
     @staticmethod
     def min(p1, p2):
@@ -296,8 +296,6 @@ class Matrix4(numpy.ndarray):
                     self[col][row] = args[0]
         elif len(args) == 16:
             # IMPORTANT NOTE: numpy stores matrices in row major order. i.e., indices are [row][col]
-            # column-major = self[col][row]
-            # TODO 2019-02-05 -- update the matrix initialization functions to match
             # TODO - (re)write __getitem__ functions to allow passing a tuple into the subscript (e.g., self[x,y] instead of self[x][y])
             self[0][0] = args[0]
             self[0][1] = args[1]
@@ -389,15 +387,12 @@ class Matrix4(numpy.ndarray):
 
         n_transposed = n.transpose()    
         crossp_n_v = numpy.cross(n_transposed, v.transpose())
-        # numpy is really annoying me...
-        # the cross product is returned as a 2D array, like [ [x, y, z] ]
-        # so x = array[0][0], y = array[0][1], z = array[0][2]
 
-        u = normalize( Point3(crossp_n_v[0][0], crossp_n_v[0][1], crossp_n_v[0][2]) )
+        u = normalize( Point3(crossp_n_v[0], crossp_n_v[1], crossp_n_v[2]) )
         u_transposed = u.transpose()
 
         crossp_u_n = numpy.cross(u_transposed, n_transposed)
-        v = normalize( Point3(crossp_u_n[0][0], crossp_u_n[0][1], crossp_u_n[0][2]))
+        v = normalize( Point3(crossp_u_n[0], crossp_u_n[1], crossp_u_n[2]))
         v_transposed = v.transpose()
 
         # Note: we have to do this transpose nonsense for dot products, too

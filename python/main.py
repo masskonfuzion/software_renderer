@@ -41,7 +41,6 @@ def main():
     # Fill the framebuffer with a constant background color
     framebuffer.clear(color=Color(0.1, 0.1, 0.1))
 
-    # TODO - make sure our numpy-based Matrix math is correct (e.g. row-major vs column-major.. does it matter?)
     # For each face in the mesh...
     for faceModelSpace in mesh.faces:
         
