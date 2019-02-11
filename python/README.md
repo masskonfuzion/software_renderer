@@ -8,5 +8,7 @@ Dependencies:
 * numpy for math
 
 This code is based on https://github.com/kosua20/PtahRenderer.git
-* The code is a Python port of the original code, done in Swift
+* The code is a Python port of the original code, which done in Swift
 * The Resources dir is a direct copy of the "demo" branch of the PtahRenderer repository
+
+This renderer writes a single frame to a file.  In future work, I'd like to do a real-time renderer.
