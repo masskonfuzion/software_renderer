@@ -261,28 +261,10 @@ class Matrix4(numpy.ndarray):
             This function will process an input (tuple) of 1 or 16 items
             1 item:   Fill the matrix with 16 instances of the 1 value
             16 items: Fill the matrix with the values provided
-              IMPORTANT NOTE: When providing 16 values, write them as the
-              4 vectors you want. The matrix is column-major, so each
-              vector corresponds to a column.
-              Or, in other words, when you pass 16 values like this:
-              e.g. m = Matrix4( 0  1  2  3  
-                                4  5  6  7  
-                                8  9  10 11 
-                                12 13 14 15 ) 
-              the data will be stored as 
-              e.g. m = Matrix4( 0  4  8  12 
-                                1  5  9  13 
-                                2  6  10 14 
-                                3  7  11 15 ) 
 
-              Even though the parameters are passed in rows, the data will
-              stored in the equivalent column-major representation (this is
-              because the matrix math code I'm copying from stores its data
-              in column-major representation :-D)
-
-            Notes: we call super().__init__(), even though, according to
-            numpy documentation, we might not need to,
-            (e.g., "help(numpy.ndarray)"):
+            Notes: we call super().__init__() by habit, even though we probably
+            don't need to. According to numpy documentation (e.g.,
+            "help(numpy.ndarray)"):
 
             |  No ``__init__`` method is needed because the array is fully initialized
             |  after the ``__new__`` method.
