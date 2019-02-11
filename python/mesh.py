@@ -124,8 +124,8 @@ class Mesh:
                         #print("Loaded indices by vertex")
 
                         # Convert the items in the list of lists from string
-                        # to int (I have to admit, the Swifty way of doing this
-                        # is more concise.. I like it)
+                        # to int (I have to admit, the Swift way of doing this
+                        # is more concise.. I prefer it to the Python way)
                         for i in range(0, len(ids_by_vtx)):
                             # could've said range(len(ids_by_vtx)), (as the
                             # range starts at 0, by default. But the form,
@@ -133,18 +133,9 @@ class Mesh:
                             ids_by_vtx[i] = list(map(int, ids_by_vtx[i]))
                         #print("Converted indices by vertex (str) into int")
 
-                        ##TODO delete
-                        ### - rearrange this "ids_by_vtx" nested list:
-                        ###   [ [v1, vt1, vn1], [v2, vt2, vn2], [v3, vt3, vn3] ]
-                        ###   into this ids_by_type
-                        ###   [ [v1, v2, v3], [vt1, vt2, vt3], [vn1, vn2, vn3] ]
-                        ##ids_by_type = list(zip(ids_by_vtx[0], ids_by_vtx[1], ids_by_vtx[2]))
-                        ##print("Loaded indices by type")
-
                         # Construct FaceIndices objects (note: subtract 1 from
                         # each index because .obj files are 1-indexed, but
                         # Python list indices are 0-indexed
-                        ###fi = [ FaceIndices(p=ids[0]-1, t=ids[1]-1, n=ids[2]-1) for ids in ids_by_type ] # TODO delete
                         fi = [ FaceIndices(p=ids[0]-1, t=ids[1]-1, n=ids[2]-1) for ids in ids_by_vtx ]
                         indices.append( [fi[0], fi[1], fi[2]] )
                         #print("Loaded face indices")

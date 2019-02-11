@@ -72,17 +72,6 @@ class Framebuffer:
         header[16] = 24             # bits per pixel
         header[17] = 0              # image descriptor
 
-        #imageLength = self.width * self.height * 3    # 3 color components per pixel # TODO delete (not needed in the Python code)
-
-        # Create pixeldata buffer - note the funky max/min stuff: it forces
-        # the r, g, and b color components to the range [0..255]. Note that
-        # it "shouldn't" be necessary to enforce these constraints.. but...
-        ## TODO - delete; this is not the correct way to do a flat map
-        ##pixeldata = [ [ int( max(min(c.b*255, 255), 0) ),
-        ##                int( max(min(c.g*255, 255), 0) ),
-        ##                int( max(min(c.r*255, 255), 0) ) ] \
-        ##              for c in self._colorBuffer ]
-
         pixeldata = []
 
         for c in self._colorBuffer:

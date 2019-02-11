@@ -22,7 +22,7 @@ def worldSpaceToClipSpace(faceModelSpace: Face, mvp: Matrix4, lightMatrix: Matri
     # numpy's dot() function is how to multiply a matrix by a vector
     # i.e., call it like "mat.dot(v)" ("mat * p" does something different)
     # But... Matrix4.dot(Point4) returns a "Matrix4" (I could write wrapper
-    # functions to handle return types better; but because I'm lazy :-D I am
+    # functions to handle return types better; but because I'm lazy, I am
     # constructing a new Point4, passing the result of the dot() function to
     # the constructor as a Python variable-length input (a.k.a. *args)
     v0 = Vertex( p = Point4(*mvp.dot(faceModelSpace.v0.p)),
@@ -62,10 +62,10 @@ def perspectiveDivide(faceClipSpace: Face) -> Face:
                                 faceClipSpace.v2.p.z * w2_inv,
                                 faceClipSpace.v2.p.w )
 
-    # The following code calls init() (a second "constructor"), which is
-    # different than the __init__ (constructor) for the Face class. That is
-    # because the PtahRenderer's Face class has an overloaded constructor; but
-    # Python does not support function overloading
+    # The following code calls init() (a "helper function" in this module).
+    # Note that In the PtahRenderer on which this code is based, this "init"
+    # function is implemented as an overloaded constructor. But, Python does
+    # not support function overloading; 
     retface = Face()
     retface.init(p0=p0NormalizedSpace, p1=p1NormalizedSpace, p2=p2NormalizedSpace, face=faceClipSpace)
 
@@ -127,8 +127,6 @@ def draw(fScreen: Face, framebuffer: Framebuffer, texture: Texture):
                 # Compute the color: use a diffuse factor with a strong light intensity
                 diffuse = 1.5 * max(0.0, normalize(Point3(nor.x, nor.y, nor.z)).dot(normalize(Point3(0.0, 1.0, 1.0))))
 
-                # TODO define texture.. Where does it come from? Is it global, from main?
-                #color = diffuse * texture[tex.x][tex.y]
                 color = diffuse * texture[tex.x, tex.y]
 
                 # Set color and depth

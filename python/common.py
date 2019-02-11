@@ -360,41 +360,22 @@ class Matrix4(numpy.ndarray):
 
     @staticmethod
     def lookAtMatrix(eye: Point3, target: Point3, up: Point3) -> Matrix4:
-        n = normalize(target - eye)
+        # Note: normalize() returns a "plain" numpy.ndarray; but we want
+        # Point3 objects, so we can have .x, .y, and .z properties. So we
+        # call the Point3 constructor, passing the result of normalize() as
+        # *args, so the constructor can unpack the elements of the ndarray
+        n = Point3( *normalize(target - eye) )
         v = normalize(up)
+        u = Point3( *normalize(numpy.cross(n, v)) )
+        v = Point3( *normalize(numpy.cross(u, n)) )
 
-        # memoize n_transposed because we'll use it again later
-        # We pass transposed objects into the numpy.cross() function because
-        # numpy apparently doesn't like to do cross products with 3x1 vectors.
+        dot_u_eye = float( u.dot(eye) )
+        dot_v_eye = float( v.dot(eye) )
+        dot_n_eye = float( n.dot(eye) )
 
-        n_transposed = n.transpose()    
-        crossp_n_v = numpy.cross(n_transposed, v.transpose())
-
-        u = normalize( Point3(crossp_n_v[0], crossp_n_v[1], crossp_n_v[2]) )
-        u_transposed = u.transpose()
-
-        crossp_u_n = numpy.cross(u_transposed, n_transposed)
-        v = normalize( Point3(crossp_u_n[0], crossp_u_n[1], crossp_u_n[2]))
-        v_transposed = v.transpose()
-
-        # Note: we have to do this transpose nonsense for dot products, too
-        # (apparently, numpy doesn't like to dot a 3x1 with another 3x1.
-        # There's probably some pure linear algebra explanation for that, but
-        # I don't care.. :-D)
-        # Also note: the order matters: a.transpose().dot(b) works; but
-        # a.dot(b.transpose()) DOES NOT work. Because a.transpose is 1x3, and
-        # b is 3x1 - so the dot (which in numpy is a matrix multiplication)
-        # comes out to a 1x1 array. We cast that 1 array item to a float.
-        # I could've written my own cross and dot functions, but I wanted to
-        # allow numpy to do as much as possible, because (I assume) numpy
-        # is optimized for performance.
-        dot_u_eye = float( u_transposed.dot(eye) )
-        dot_v_eye = float( v_transposed.dot(eye) )
-        dot_n_eye = float( n_transposed.dot(eye) )
-
-        matrix = Matrix4(  u.x,  u.y,  u.z, -dot_u_eye,
-                           v.x,  v.y,  v.z, -dot_v_eye,
-                          -n.x, -n.y, -n.z,  dot_n_eye,
+        matrix = Matrix4(  u.x,  u.y,  u.z, -u.dot(eye),
+                           v.x,  v.y,  v.z, -v.dot(eye),
+                          -n.x, -n.y, -n.z,  n.dot(eye),
                            0.0,  0.0,  0.0,  1.0 )
 
         return matrix

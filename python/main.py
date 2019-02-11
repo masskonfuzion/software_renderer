@@ -30,7 +30,6 @@ def main():
     # Remember: the transformation is written PVM*p
     # Mathematically, transformations are applied in the following order:
     #   Model, View, Projection
-    #mvpMatrix = projectionMatrix * viewMatrix * modelMatrix
     mvpMatrix = projectionMatrix.dot(viewMatrix.dot(modelMatrix))
 
     lightMatrix = numpy.linalg.inv(modelMatrix).transpose()

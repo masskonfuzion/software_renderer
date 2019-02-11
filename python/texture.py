@@ -1,5 +1,4 @@
 from common import Color
-import struct
 import os
 import traceback
 
@@ -53,23 +52,6 @@ class Texture:
                     g = float(content[pixelBytes * i + 1]) / 255.0
                     b = float(content[pixelBytes * i    ]) / 255.0
                     self._pixels.append(Color(r, g, b))
-
-
-    ##def _subscript(self, a: int, b: int) -> Color:
-    ##    return self._pixels
-
-    ##def __getitem__(self, pos):
-    ##    """ Get the Color at a given x,y location
-
-    ##        :param pos: Position in Texture image to return Color from
-    ##        :type pos: 2-tuple: float
-    ##    """
-    ##    a = pos[0] * float(self._width)
-    ##    b = pos[1] * float(self._height)
-
-    ##    return self._pixels[ min(max(b,0), height-1) * width + \
-    ##                         min(max(a,0), width-1) ]
-
 
     def __getitem__(self, pos: tuple) -> Color:
         """ Get the Color at a given u,v location

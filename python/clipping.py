@@ -3,7 +3,8 @@ from mesh import Face, Vertex
 
 def clip(faceClipSpace: Face) -> [Face]:
 
-    # Literally, I didn't know Python supported type hinting like this :-)
+    # Literally, I didn't know Python supported type hinting like this
+    # I found out by doing this project :-)
     triangles : [Face] = []
 
     # All vertices are behind the camera
@@ -23,8 +24,6 @@ def clip(faceClipSpace: Face) -> [Face]:
 
         # Note that Python treats a list passed into a function as a pass-by-reference
         # (the PtahRenderer code (in Swift, pass-by-reference must be explicitly declared)
-        # TODO make sure this function properly writes the vertices array (the LHS vertices
-        # array, i.e., the one that's a member of the clipEdge objects)
         clipEdge(v0=faceClipSpace.v0, v1=faceClipSpace.v1, vertices=vertices)
         clipEdge(v0=faceClipSpace.v1, v1=faceClipSpace.v2, vertices=vertices)
         clipEdge(v0=faceClipSpace.v2, v1=faceClipSpace.v0, vertices=vertices)
