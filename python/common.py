@@ -153,6 +153,7 @@ class Point3(numpy.ndarray):
     def z(self, value: float):
         self[2] = value
 
+    # TODO Remove Point3 min/max? These were supposed to be deleted -- probably copy/pasta from the Point2 class
     @staticmethod
     def min(p1, p2):
         """ Return the pariswise minimum of p1 and p2
@@ -368,10 +369,6 @@ class Matrix4(numpy.ndarray):
         v = normalize(up)
         u = Point3( *normalize(numpy.cross(n, v)) )
         v = Point3( *normalize(numpy.cross(u, n)) )
-
-        dot_u_eye = float( u.dot(eye) )
-        dot_v_eye = float( v.dot(eye) )
-        dot_n_eye = float( n.dot(eye) )
 
         matrix = Matrix4(  u.x,  u.y,  u.z, -u.dot(eye),
                            v.x,  v.y,  v.z, -v.dot(eye),
