@@ -75,13 +75,13 @@ class Point2(numpy.ndarray):
 
     @staticmethod
     def min(p1, p2):
-        """ Return the pariswise minimum of p1 and p2
+        """ Return the pairwise minimum of p1 and p2
         """
         return Point2(x=min(p1.x, p2.x), y=min(p1.y, p2.y))
 
     @staticmethod
     def max(p1, p2):
-        """ Return the pariswise maximum of p1 and p2
+        """ Return the pairwise maximum of p1 and p2
         """
         return Point2(x=max(p1.x, p2.x), y=max(p1.y, p2.y))
 
@@ -153,19 +153,6 @@ class Point3(numpy.ndarray):
     def z(self, value: float):
         self[2] = value
 
-    # TODO Remove Point3 min/max? These were supposed to be deleted -- probably copy/pasta from the Point2 class
-    @staticmethod
-    def min(p1, p2):
-        """ Return the pariswise minimum of p1 and p2
-        """
-        return Point2(x=min(p1.x, p2.x), y=min(p1.y, p2.y), z=min(p1.z, p2.z))
-
-    @staticmethod
-    def max(p1, p2):
-        """ Return the pariswise maximum of p1 and p2
-        """
-        return Point2(x=max(p1.x, p2.x), y=max(p1.y, p2.y), z=max(p1.z, p2.z))
-
 
 class Point4(numpy.ndarray):
     def __new__(cls, x=0.0, y=0.0, z=0.0, w=0.0):
@@ -229,18 +216,6 @@ class Point4(numpy.ndarray):
     @w.setter
     def w(self, value: float):
         self[3] = value
-
-    @staticmethod
-    def min(p1, p2):
-        """ Return the pariswise minimum of p1 and p2
-        """
-        return Point2(x=min(p1.x, p2.x), y=min(p1.y, p2.y), z=min(p1.z, p2.z), w=min(p1.w, p2.w))
-
-    @staticmethod
-    def max(p1, p2):
-        """ Return the pariswise maximum of p1 and p2
-        """
-        return Point2(x=max(p1.x, p2.x), y=max(p1.y, p2.y), z=max(p1.z, p2.z), w=max(p1.w, p2.w))
 
 
 class Matrix4(numpy.ndarray):
