@@ -55,7 +55,7 @@ def main():
             # Apply perspective division
             faceNDSpace = perspectiveDivide(clippedFace)
 
-            # Check if the face is invisible and ahould be culled
+            # Check if the face is invisible and should be culled
             if cullFace(faceNDSpace):
                 continue
 
