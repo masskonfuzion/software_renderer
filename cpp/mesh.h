@@ -110,7 +110,8 @@ struct Mesh {
                         // Position (Point4: x,y,z,1)
                         positions.push_back( Point4(std::stof(components[1]),
                                                      std::stof(components[2]),
-                                                     std::stof(components[3])) );
+                                                     std::stof(components[3]),
+                                                     1.0) );
                     }
                     else if (lineprefix == "vt") {
                         // UV texture coordinates

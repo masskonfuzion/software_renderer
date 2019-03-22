@@ -54,22 +54,6 @@ void string_split(const std::string& s, const char& split_char, std::vector<std:
 }
 
 
-// cout a vector (adapted from https://stackoverflow.com/questions/10750057/how-to-print-out-the-contents-of-a-vector)
-template <typename T>
-std::ostream& operator<< (std::ostream& out, const std::vector<T>& v) {
-  if ( !v.empty() ) {
-    out << '[';
-
-    //std::copy (v.begin(), v.end(), std::ostream_iterator<T>(out, ", "));  // This was the original line; but apparently, ostream_iterator is available only since C++17? But we're not using that standard for this project. Because reasons)
-    for (auto element : v) {
-        out << element << ", ";
-    }
-
-    out << "\b\b]";
-  }
-  return out;
-}
-
 // Type aliases (easier-to-read than typedef)
 
 bool float_eq( float a, float b) {
@@ -85,7 +69,7 @@ bool float_eq( float a, float b) {
 template <class T>
 T operator- (const T& a, const T& b) {
     T ret;
-    for (int i; i < ret.v.size(); i++) {
+    for (int i = 0; i < ret.v.size(); i++) {
         ret.v[i] = a.v[i] - b.v[i];
     }
 
@@ -97,7 +81,7 @@ T operator- (const T& a, const T& b) {
 template <class T>
 T operator+ (const T& a, const T& b) {
     T ret;
-    for (int i; i < ret.v.size(); i++) {
+    for (int i = 0; i < ret.v.size(); i++) {
         ret.v[i] = a.v[i] + b.v[i];
     }
 
@@ -588,8 +572,8 @@ struct Matrix4 {
         matrix[0][0] = f / aspect;
         matrix[1][1] = f;
         matrix[2][2] = (far + near) / (near - far);
-        matrix[2][3] = -1.0;
-        matrix[3][2] = (2.0 * far * near) / (near - far);
+        matrix[2][3] = (2.0 * far * near) / (near - far);
+        matrix[3][2] = -1.0;
         matrix[3][3] = 0.0;
 
         return matrix;
@@ -727,8 +711,8 @@ struct Matrix4 {
 
         det = 1.0 / det;
 
-        for (int c = 0; c < 3; c++) {
-            for (int r = 0; r < 3; r++) {
+        for (int c = 0; c < 4; c++) {
+            for (int r = 0; r < 4; r++) {
                 ret[c][r] *= det;
             }
         }
@@ -836,6 +820,70 @@ bool operator== (const Point4& a, const Point4& b) {
 
 // Note: The code on which this is based (PtahRenderer) defines only Point types (i.e., no types named "vector")
 
+// cout a vector (adapted from https://stackoverflow.com/questions/10750057/how-to-print-out-the-contents-of-a-vector)
+template <typename T>
+std::ostream& operator<< (std::ostream& out, const std::vector<T>& v) {
+  if ( !v.empty() ) {
+    out << '[';
+
+    //std::copy (v.begin(), v.end(), std::ostream_iterator<T>(out, ", "));  // This was the original line; but apparently, ostream_iterator is available only since C++17? But we're not using that standard for this project. Because reasons)
+    for (auto element : v) {
+        out << element << ", ";
+    }
+
+    out << "\b\b]";
+  }
+  return out;
+}
+
+
+// cout point/vec-like objects (i.e., my Point2, Point3, and Point4 classes)
+// NOTE: this would be well-served as a template function, but I couldn't get it to work properly because of ambiguous overloads. Also, I hate templates, mainly because I don't REALLY understand tepmlating...
+std::ostream& operator<<(std::ostream& out, const Point2& pointObj) {
+    std::string sep = "   ";
+    out << "[ ";
+    int i;
+    for (i = 0; i < pointObj.v.size() - 1; i++) {
+        out << pointObj.v[i] << sep;
+    }
+    out << pointObj.v[i];
+    out << " ]";
+    return out;
+}
+
+std::ostream& operator<<(std::ostream& out, const Point3& pointObj) {
+    std::string sep = "   ";
+    out << "[ ";
+    int i;
+    for (i = 0; i < pointObj.v.size() - 1; i++) {
+        out << pointObj.v[i] << sep;
+    }
+    out << pointObj.v[i];
+    out << " ]";
+    return out;
+}
+
+std::ostream& operator<<(std::ostream& out, const Point4& pointObj) {
+    std::string sep = "   ";
+    out << "[ ";
+    int i;
+    for (i = 0; i < pointObj.v.size() - 1; i++) {
+        out << pointObj.v[i] << sep;
+    }
+    out << pointObj.v[i];
+    out << " ]";
+    return out;
+}
+
+// cout a Matrix4 
+std::ostream& operator<< (std::ostream& out, const Matrix4& mat) {
+    // Print the elements of mat as they would appear on paper
+    out << mat.m[0][0] << "   " << mat.m[1][0] << "   " << mat.m[2][0] << "   " << mat.m[3][0] << std::endl;
+    out << mat.m[0][1] << "   " << mat.m[1][1] << "   " << mat.m[2][1] << "   " << mat.m[3][1] << std::endl;
+    out << mat.m[0][2] << "   " << mat.m[1][2] << "   " << mat.m[2][2] << "   " << mat.m[3][2] << std::endl;
+    out << mat.m[0][3] << "   " << mat.m[1][3] << "   " << mat.m[2][3] << "   " << mat.m[3][3] << std::endl;
+    return out;
+}
 
 
 

@@ -98,12 +98,15 @@ Point3 barycentre(const Point2& p, const Point4& v0, const Point4& v1, const Poi
     Point4 ac = v2 - v0;
 
     // pa: vector with p coordinates in the barycentric frame.
-    Point2 pa = Point2(v0.x, v0.y);
+    Point2 pa = Point2(v0.x, v0.y) - p;
 
     // magic
     Point3 uv1 = cross( Point3(ac.x, ab.x, pa.x), Point3(ac.y, ab.y, pa.y) );
 
     // Avoid division imprecision
+    if (std::abs(uv1.z) < 1e-2) {
+        return Point3(-1.0, 1.0, 1.0);
+    }
 	return (1.0/uv1.z)*Point3(uv1.z-(uv1.x+uv1.y), uv1.y, uv1.x);
 }
 

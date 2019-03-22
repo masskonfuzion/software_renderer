@@ -41,7 +41,7 @@ int main(int argc, char* argv[]) {
     // "reverse"
     Matrix4 mvpMatrix = projectionMatrix * viewMatrix * modelMatrix;
 
-    Matrix4 lightMatrix = Matrix4::inverse( Matrix4::transpose( modelMatrix ) );
+    Matrix4 lightMatrix = Matrix4::transpose( Matrix4::inverse( modelMatrix ) );
 
     std::cout << "Rendering..." << std::endl;
 
