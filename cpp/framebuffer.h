@@ -74,7 +74,8 @@ public:
             // because you can't create an array to a size that is not known at compile time (even if
             // the size you eventually want to use is of type "const xyz")
             //std::vector<uint8_t> pixeldata;   // TODO delete this line
-            char pixeldata[width * height * 3];
+            //char pixeldata[width * height * 3];       // 
+            char pixeldata[colorBuffer_.size() * 3];
 
             // TODO delete this for loop?
             //for (std::vector<Color>::iterator cbItem = colorBuffer_.begin(); cbItem != colorBuffer_.end(); ++cbItem) {
@@ -84,8 +85,9 @@ public:
             //    pixeldata.push_back( std::max(std::min(int(cbItem.r*255), 255), 0) );
             //}
 
-            for (int i = 0; i < colorBuffer_.size(); i++) {
-                Color& cbItem = colorBuffer_[i];
+            // TODO extend the loop by a factor of 3?? you need 3 items per colorbuffer item 
+            for (int i = 0; i < sizeof(pixeldata); i += 3) {
+                Color& cbItem = colorBuffer_[i / 3];    // Get the actual index of the colorBuffer item we want to reference
                 // For each Color object, write 3 items to pixeldata (the float values for r, g, and b)
                 // Remember that the size of pixeldata is the size of the colorBuffer * 3
                 // i.e., we store 3 separate ints (r, g, and b) for each Color
